@@ -1,0 +1,284 @@
+zabbix_export:
+  version: '6.0'
+  date: '2022-08-30T20:31:11Z'
+  groups:
+    -
+      uuid: 4918b88734c54bd094cff7585b5d71fc
+      name: 'Templates/Network devices'
+    -
+      uuid: 6070be19e3d44c5dbae0905131b517d3
+      name: Templates/Power
+  templates:
+    -
+      uuid: d7d79987694347baac166c190d687475
+      template: 'HP J9774A 2530-8G-PoEP switch PoE status'
+      name: 'HP J9774A 2530-8G-PoEP switch PoE status'
+      description: |
+        HP J9774A 2530-8G-PoEP switch PoE status template.
+        
+        Based on HP-ICF-POE-MIB.mib
+        
+        By Kari Karvonen <kari.karvonen@kasenet.fi>
+      groups:
+        -
+          name: 'Templates/Network devices'
+        -
+          name: Templates/Power
+      items:
+        -
+          uuid: be68fb639ef54933b79341c9c3a16e7c
+          name: 'PoE power supply source'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.1.9.1.7.1.1.10
+          key: hpicfPoePowerSupplySourceType
+          delay: 60m
+          history: '0'
+          trends: '0'
+          valuemap:
+            name: 'source type'
+          tags:
+            -
+              tag: component
+              value: PoE
+        -
+          uuid: 76e7bdd609824ef2a1a964a350dd552b
+          name: 'PoE power supply type'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.1.9.1.7.1.2.10
+          key: hpicfPoePowerSupplyType
+          delay: 60m
+          history: '0'
+          trends: '0'
+          valuemap:
+            name: 'supply type'
+          tags:
+            -
+              tag: component
+              value: PoE
+        -
+          uuid: 01436e2b845640b1a4f617582346d3ab
+          name: 'Total available PoE power'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.1.9.1.6.1.4.1
+          key: hpicfPseAvailablePower
+          delay: 60m
+          history: '0'
+          trends: '0'
+          units: Watts
+          tags:
+            -
+              tag: component
+              value: PoE
+        -
+          uuid: d62f867b000a4ccaabc7e695765b44ac
+          name: 'Used PoE power total'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.1.9.1.6.1.5.1
+          key: hpicfPseUsedPower
+          units: Watts
+          tags:
+            -
+              tag: component
+              value: PoE
+      discovery_rules:
+        -
+          uuid: 4a8300d153784c30b371b031a381d58d
+          name: 'PoE discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#PORTCURRENT},1.3.6.1.4.1.11.2.14.11.1.9.1.1.1.1.1,{#IFNAME},1.3.6.1.2.1.31.1.1.1.1,{#IFALIAS},1.3.6.1.2.1.31.1.1.1.18]'
+          key: net.poe.discovery
+          delay: 60m
+          filter:
+            conditions:
+              -
+                macro: '{#PORTCURRENT}'
+                operator: EXISTS
+                formulaid: A
+          item_prototypes:
+            -
+              uuid: 9561ad1440c24a469b9129e5da914910
+              name: 'Port {#IFNAME} {#IFALIAS} actual power'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.11.2.14.11.1.9.1.1.1.8.1.{#SNMPINDEX}'
+              key: 'poe[hpicfPoePethPsePortActualPower.{#SNMPINDEX}]'
+              value_type: FLOAT
+              units: W
+              description: 'This field specifies the actual power drained by the device connected to this port'
+              preprocessing:
+                -
+                  type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              tags:
+                -
+                  tag: component
+                  value: PoE
+            -
+              uuid: bf1530fea1674eddbc8b7f2047d4cc2b
+              name: 'Port {#IFNAME} {#IFALIAS} current'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.11.2.14.11.1.9.1.1.1.1.1.{#SNMPINDEX}'
+              key: 'poe[hpicfPoePethPsePortCurrent.{#SNMPINDEX}]'
+              value_type: FLOAT
+              units: mA
+              description: 'This field specifies the current supplied at this port.'
+              tags:
+                -
+                  tag: component
+                  value: PoE
+            -
+              uuid: 69c38fef80d1426180d93ecf80de56a5
+              name: 'Port {#IFNAME} {#IFALIAS} power LLDP detect'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.11.2.14.11.1.9.1.1.1.6.1.{#SNMPINDEX}'
+              key: 'poe[hpicfPoePethPsePortLLDPDetect.{#SNMPINDEX}]'
+              delay: 5m
+              description: 'This field specifies if power should be allocated using LLDP advertised information regarding the PD.'
+              valuemap:
+                name: 'lldp detect'
+              tags:
+                -
+                  tag: component
+                  value: PoE
+            -
+              uuid: 69c3689c158847138a07e910b7b379bf
+              name: 'Port {#IFNAME} {#IFALIAS} PoE+ value'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.11.2.14.11.1.9.1.1.1.7.1.{#SNMPINDEX}'
+              key: 'poe[hpicfPoePethPsePortPoePlusPowerValue.{#SNMPINDEX}]'
+              description: '"This field specifies the power allocation defined for this port. Use this object for equipment supporting high power, that is greater than 15 Watts. This value is specified in Watts (W). Maximum supported is 33W'
+              tags:
+                -
+                  tag: component
+                  value: PoE
+            -
+              uuid: 50d4a1583f3e45f98a67aae1cedacddd
+              name: 'Port {#IFNAME} {#IFALIAS} power'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.11.2.14.11.1.9.1.1.1.3.1.{#SNMPINDEX}'
+              key: 'poe[hpicfPoePethPsePortPower.{#SNMPINDEX}]'
+              value_type: FLOAT
+              units: W
+              description: 'This field specifies the Power supplied at this port.'
+              preprocessing:
+                -
+                  type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              tags:
+                -
+                  tag: component
+                  value: PoE
+            -
+              uuid: 6f7b9894626a448ab9e3202c0aff9a16
+              name: 'Port {#IFNAME} {#IFALIAS} power allocated by'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.11.2.14.11.1.9.1.1.1.4.1.{#SNMPINDEX}'
+              key: 'poe[hpicfPoePethPsePortPowerAllocateBy.{#SNMPINDEX}]'
+              delay: 5m
+              value_type: FLOAT
+              description: 'This field specifies the power allocation method for this port. The default value is usage.'
+              valuemap:
+                name: 'Power allocated by'
+              tags:
+                -
+                  tag: component
+                  value: PoE
+            -
+              uuid: bb3e0d39090548b28cd77e0f948c57c5
+              name: 'Port {#IFNAME} {#IFALIAS} power allocation'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.11.2.14.11.1.9.1.1.1.4.1.{#SNMPINDEX}'
+              key: 'poe[hpicfPoePethPsePortPowerValue.{#SNMPINDEX}]'
+              value_type: FLOAT
+              units: W
+              description: 'This field specifies the power allocation defined for this port.'
+              preprocessing:
+                -
+                  type: MULTIPLIER
+                  parameters:
+                    - '0.001'
+              tags:
+                -
+                  tag: component
+                  value: PoE
+            -
+              uuid: 64d21edda56e426c9363511932b731f0
+              name: 'Port {#IFNAME} {#IFALIAS} voltage'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.11.2.14.11.1.9.1.1.1.2.1.{#SNMPINDEX}'
+              key: 'poe[hpicfPoePethPsePortVoltage.{#SNMPINDEX}]'
+              value_type: FLOAT
+              units: V
+              description: 'This field specifies the Voltage supplied at this port.'
+              preprocessing:
+                -
+                  type: MULTIPLIER
+                  parameters:
+                    - '0.1'
+              tags:
+                -
+                  tag: component
+                  value: PoE
+          graph_prototypes:
+            -
+              uuid: ed3767b169af49bfb30fbed93d3e1651
+              name: 'Port {#IFNAME} {#IFALIAS} actual power'
+              ymin_type_1: FIXED
+              graph_items:
+                -
+                  color: 199C0D
+                  calc_fnc: ALL
+                  item:
+                    host: 'HP J9774A 2530-8G-PoEP switch PoE status'
+                    key: 'poe[hpicfPoePethPsePortActualPower.{#SNMPINDEX}]'
+      valuemaps:
+        -
+          uuid: d89f3e0bc80d4fccb952052f8cd1d282
+          name: 'lldp detect'
+          mappings:
+            -
+              value: '1'
+              newvalue: disabled
+            -
+              value: '2'
+              newvalue: enabled
+        -
+          uuid: 6bd1282b21e64e059b63e30ca734d984
+          name: 'Power allocated by'
+          mappings:
+            -
+              value: '1'
+              newvalue: usage
+            -
+              value: '2'
+              newvalue: class
+            -
+              value: '3'
+              newvalue: value
+        -
+          uuid: 0bf3e2e937fa4ce28d377a9149a862ba
+          name: 'source type'
+          mappings:
+            -
+              value: '1'
+              newvalue: internal
+            -
+              value: '2'
+              newvalue: external
+        -
+          uuid: aa9551b8c3184119ad6e03be1915240c
+          name: 'supply type'
+          mappings:
+            -
+              value: '1'
+              newvalue: PoE
+            -
+              value: '2'
+              newvalue: PoE+
+            -
+              value: '3'
+              newvalue: 'not present'
+            -
+              value: '4'
+              newvalue: fault
