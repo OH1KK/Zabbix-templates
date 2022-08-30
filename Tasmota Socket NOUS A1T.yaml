@@ -1,0 +1,469 @@
+zabbix_export:
+  version: '6.0'
+  date: '2022-08-30T20:33:05Z'
+  groups:
+    -
+      uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    -
+      uuid: 55dc8a5408384d1b8533136b8acfc271
+      template: 'Tasmota Socket NOUS A1T'
+      name: 'Tasmota Socket NOUS A1T'
+      description: 'Tasmota Socket NOUS A1T'
+      groups:
+        -
+          name: Templates
+      items:
+        -
+          uuid: 7680e66634ac402cac5a1261f4b048a9
+          name: 'Apparent Power'
+          type: DEPENDENT
+          key: ApparentPower
+          delay: '0'
+          value_type: FLOAT
+          units: VA
+          description: 'Apparent power is the product of voltage and current consumed by a load irrespective of its phase angle. It is the combination of real and reactive powers. It is represented by the letter S.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.ApparentPower
+          master_item:
+            key: energyStatus
+        -
+          uuid: da29d7addb6b4932acb3efdfc32a43d3
+          name: Current
+          type: DEPENDENT
+          key: Current
+          delay: '0'
+          value_type: FLOAT
+          units: A
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.Current
+          master_item:
+            key: energyStatus
+        -
+          uuid: 86c0ad6cf0494dd49f72dd5b1f61dda9
+          name: EnergyStatus
+          type: HTTP_AGENT
+          key: energyStatus
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          url: 'http://{HOST.IP}/cm'
+          query_fields:
+            -
+              name: cmnd
+              value: 'Status 8'
+        -
+          uuid: 164de1f33d724576ac026f068bda463a
+          name: 'Active Power'
+          type: DEPENDENT
+          key: Power
+          delay: '0'
+          value_type: FLOAT
+          units: W
+          description: 'It is the true power transmitted to the load for energy conversion. For example, a motor consumes the true power from the circuit and converts it into mechanical power, whereas lamps, on the other hand, convert the same into light. It is represented by the letter P.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.Power
+          master_item:
+            key: energyStatus
+        -
+          uuid: d8c68af94faf4040a0795b6b28919381
+          name: 'Power Factor'
+          type: DEPENDENT
+          key: PowerFactor
+          delay: '0'
+          value_type: FLOAT
+          units: 'COS φ'
+          description: 'Unity power factor is considered as a perfect scenario, during which apparent power and the real power shall be in phase. When the load is purely resistive, the current flow to the load will be linear and hence the phase shift between the voltage and current will be zero and cos Φ will be unity.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.Factor
+          master_item:
+            key: energyStatus
+        -
+          uuid: 6080db4c61c7432f8c3403d1d28a0454
+          name: 'Power status'
+          type: DEPENDENT
+          key: PowerStatus
+          delay: '0'
+          description: 'Relay status 0 = off, 1 = on'
+          valuemap:
+            name: 'Power status'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Status.Power
+          master_item:
+            key: Status
+        -
+          uuid: 2a579d5be5b9430f8c2f558cdb25b7ca
+          name: 'Reactive Power'
+          type: DEPENDENT
+          key: ReactivePower
+          delay: '0'
+          value_type: FLOAT
+          units: var
+          description: 'Reactive power is the power required to produce the magnetic field in motors and transformers and has a direct impact on the p.f. It is represented by the letter Q.'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.ReactivePower
+          master_item:
+            key: energyStatus
+        -
+          uuid: 6fe82a021b4749b9a06c38b92a1cae7e
+          name: Status
+          type: HTTP_AGENT
+          key: Status
+          trends: '0'
+          value_type: TEXT
+          url: 'http://{HOST.IP}/cm'
+          query_fields:
+            -
+              name: cmnd
+              value: Status
+          triggers:
+            -
+              uuid: 3513bd0680f44bc980084fe195dd203b
+              expression: 'nodata(/Tasmota Socket NOUS A1T/Status,300)<>0'
+              name: 'Connection problem.  More than 5 minutes since last data from socket.'
+              priority: INFO
+              description: 'No data received from socket in 5 minutes. Connection problem.'
+        -
+          uuid: 1eb39e3320d74692864afa716e708f5b
+          name: 'Power usage today'
+          type: DEPENDENT
+          key: Today
+          delay: '0'
+          value_type: FLOAT
+          units: kWh
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.Today
+          master_item:
+            key: energyStatus
+        -
+          uuid: f4ff95ab15ff477e8fca6925644c31f2
+          name: 'Power usage total'
+          type: DEPENDENT
+          key: Total
+          delay: '0'
+          value_type: FLOAT
+          units: kWh
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.Total
+          master_item:
+            key: energyStatus
+        -
+          uuid: ce94ffbc7ff94b36a36c9569f3956dba
+          name: TotalStartTime
+          type: DEPENDENT
+          key: TotalStartTime
+          delay: '0'
+          trends: '0'
+          value_type: LOG
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.TotalStartTime
+          master_item:
+            key: energyStatus
+        -
+          uuid: 4e2ae4ef1c2d4ea5ab90762eee60cd80
+          name: Voltage
+          type: DEPENDENT
+          key: Voltage
+          delay: '0'
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.Voltage
+          master_item:
+            key: energyStatus
+          triggers:
+            -
+              uuid: 5af016d83a5a4cf9999977e219631225
+              expression: 'last(/Tasmota Socket NOUS A1T/Voltage)<1'
+              name: 'Power loss'
+              status: DISABLED
+              priority: WARNING
+        -
+          uuid: f93bc937d5e7478e83ca64e0edad3d89
+          name: 'Power usage yesterday'
+          type: DEPENDENT
+          key: Yesterday
+          delay: '0'
+          value_type: FLOAT
+          units: kWh
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSNS.ENERGY.Yesterday
+          master_item:
+            key: energyStatus
+      dashboards:
+        -
+          uuid: 4663371314764d3d930a39d6048196a1
+          name: 'Power status'
+          pages:
+            -
+              widgets:
+                -
+                  type: ITEM
+                  name: Current
+                  x: '20'
+                  width: '4'
+                  height: '3'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: adv_conf
+                      value: '1'
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: INTEGER
+                      name: decimal_places
+                      value: '3'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: Current
+                -
+                  type: ITEM
+                  name: 'Energy used today'
+                  width: '4'
+                  height: '3'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: adv_conf
+                      value: '1'
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: Today
+                -
+                  type: ITEM
+                  name: 'Energy used yesterday'
+                  x: '4'
+                  width: '4'
+                  height: '3'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: adv_conf
+                      value: '1'
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: Yesterday
+                -
+                  type: ITEM
+                  name: Power
+                  x: '12'
+                  width: '4'
+                  height: '3'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: adv_conf
+                      value: '1'
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: Power
+                -
+                  type: GRAPH_CLASSIC
+                  name: 'Power consumption'
+                  'y': '3'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        name: 'Power usage'
+                -
+                  type: ITEM
+                  name: 'Relay status'
+                  x: '8'
+                  width: '4'
+                  height: '3'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: PowerStatus
+                -
+                  type: ITEM
+                  name: Voltage
+                  x: '16'
+                  width: '4'
+                  height: '3'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: adv_conf
+                      value: '1'
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: INTEGER
+                      name: decimal_places
+                      value: '0'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: Voltage
+                -
+                  type: GRAPH_CLASSIC
+                  name: 'Voltage and current'
+                  x: '12'
+                  'y': '3'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        name: 'Voltage and current'
+      valuemaps:
+        -
+          uuid: dd870662faa543beb369033cbca0ad78
+          name: 'Power status'
+          mappings:
+            -
+              value: '0'
+              newvalue: 'off'
+            -
+              value: '1'
+              newvalue: 'on'
+  graphs:
+    -
+      uuid: a8ee0296018049c780cda74b3e586ce3
+      name: 'Power usage'
+      height: '400'
+      ymin_type_1: FIXED
+      graph_items:
+        -
+          drawtype: BOLD_LINE
+          color: 00FF00
+          calc_fnc: ALL
+          item:
+            host: 'Tasmota Socket NOUS A1T'
+            key: Power
+        -
+          sortorder: '1'
+          color: 43A047
+          calc_fnc: ALL
+          item:
+            host: 'Tasmota Socket NOUS A1T'
+            key: ReactivePower
+        -
+          sortorder: '2'
+          color: 2E7D32
+          calc_fnc: ALL
+          item:
+            host: 'Tasmota Socket NOUS A1T'
+            key: ApparentPower
+        -
+          sortorder: '3'
+          drawtype: DASHED_LINE
+          color: FF0000
+          yaxisside: RIGHT
+          calc_fnc: ALL
+          item:
+            host: 'Tasmota Socket NOUS A1T'
+            key: PowerFactor
+    -
+      uuid: be9945a65c574808bdc94a1d78e77895
+      name: 'Voltage and current'
+      height: '400'
+      ymin_type_1: FIXED
+      graph_items:
+        -
+          color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Tasmota Socket NOUS A1T'
+            key: Voltage
+        -
+          sortorder: '1'
+          color: F63100
+          yaxisside: RIGHT
+          calc_fnc: ALL
+          item:
+            host: 'Tasmota Socket NOUS A1T'
+            key: Current
