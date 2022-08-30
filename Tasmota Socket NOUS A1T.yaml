@@ -1,10 +1,10 @@
 zabbix_export:
   version: '6.0'
-  date: '2022-08-30T20:33:05Z'
+  date: '2022-08-30T20:37:57Z'
   groups:
     -
-      uuid: 7df96b18c230490a9a0a9e2307226338
-      name: Templates
+      uuid: 6070be19e3d44c5dbae0905131b517d3
+      name: Templates/Power
   templates:
     -
       uuid: 55dc8a5408384d1b8533136b8acfc271
@@ -13,7 +13,7 @@ zabbix_export:
       description: 'Tasmota Socket NOUS A1T'
       groups:
         -
-          name: Templates
+          name: Templates/Power
       items:
         -
           uuid: 7680e66634ac402cac5a1261f4b048a9
