@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.0'
-  date: '2022-08-30T20:37:57Z'
+  date: '2022-09-05T20:30:54Z'
   groups:
     -
       uuid: 6070be19e3d44c5dbae0905131b517d3
@@ -30,7 +30,7 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.ApparentPower
           master_item:
-            key: energyStatus
+            key: status
         -
           uuid: da29d7addb6b4932acb3efdfc32a43d3
           name: Current
@@ -45,20 +45,109 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.Current
           master_item:
-            key: energyStatus
+            key: status
         -
-          uuid: 86c0ad6cf0494dd49f72dd5b1f61dda9
-          name: EnergyStatus
-          type: HTTP_AGENT
-          key: energyStatus
-          history: '0'
+          uuid: 7a950f4898a54ee296f84bb9c90d7c9e
+          name: 'Device IP'
+          type: DEPENDENT
+          key: DeviceIP
+          delay: '0'
+          history: 7d
           trends: '0'
           value_type: TEXT
-          url: 'http://{HOST.IP}/cm'
-          query_fields:
+          inventory_link: OOB_IP
+          preprocessing:
             -
-              name: cmnd
-              value: 'Status 8'
+              type: JSONPATH
+              parameters:
+                - $.StatusNET.IPAddress
+          master_item:
+            key: status
+        -
+          uuid: 1f578ffadf1c4e60b6b6c4c3879c09a8
+          name: 'Device mac'
+          type: DEPENDENT
+          key: DeviceMAC
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          inventory_link: MACADDRESS_A
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusNET.Mac
+          master_item:
+            key: status
+        -
+          uuid: cb0c96e5860d4118a1a2b7aff89a9efc
+          name: 'Device name'
+          type: DEPENDENT
+          key: DeviceName
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          inventory_link: NAME
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Status.DeviceName
+          master_item:
+            key: status
+        -
+          uuid: 81a148855b514abca9228ca7bf1986cb
+          name: 'Friendly name'
+          type: DEPENDENT
+          key: FriendlyName
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          inventory_link: ALIAS
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$.Status.FriendlyName[0]'
+          master_item:
+            key: status
+        -
+          uuid: 28e911ba2fe14f2fb4f95d7f867aead2
+          name: 'Firmware version'
+          type: DEPENDENT
+          key: FwVersion
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          inventory_link: SOFTWARE
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusFWR.Version
+          master_item:
+            key: status
+        -
+          uuid: 8f36d8fac1af4055a0a11f44ecd826e8
+          name: Hardware
+          type: DEPENDENT
+          key: Hardware
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          inventory_link: HARDWARE
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusFWR.Hardware
+          master_item:
+            key: status
         -
           uuid: 164de1f33d724576ac026f068bda463a
           name: 'Active Power'
@@ -74,7 +163,7 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.Power
           master_item:
-            key: energyStatus
+            key: status
         -
           uuid: d8c68af94faf4040a0795b6b28919381
           name: 'Power Factor'
@@ -90,23 +179,7 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.Factor
           master_item:
-            key: energyStatus
-        -
-          uuid: 6080db4c61c7432f8c3403d1d28a0454
-          name: 'Power status'
-          type: DEPENDENT
-          key: PowerStatus
-          delay: '0'
-          description: 'Relay status 0 = off, 1 = on'
-          valuemap:
-            name: 'Power status'
-          preprocessing:
-            -
-              type: JSONPATH
-              parameters:
-                - $.Status.Power
-          master_item:
-            key: Status
+            key: status
         -
           uuid: 2a579d5be5b9430f8c2f558cdb25b7ca
           name: 'Reactive Power'
@@ -122,26 +195,37 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.ReactivePower
           master_item:
-            key: energyStatus
+            key: status
         -
-          uuid: 6fe82a021b4749b9a06c38b92a1cae7e
-          name: Status
+          uuid: 6080db4c61c7432f8c3403d1d28a0454
+          name: 'Relay status'
+          type: DEPENDENT
+          key: RelayStatus
+          delay: '0'
+          description: 'Relay status 0 = off, 1 = on'
+          valuemap:
+            name: 'Power status'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.Status.Power
+          master_item:
+            key: status
+        -
+          uuid: d9aaf8fe59b04c6dbd7c725ed8cbf1d5
+          name: 'Status json'
           type: HTTP_AGENT
-          key: Status
+          key: status
+          history: '0'
           trends: '0'
           value_type: TEXT
+          timeout: 10s
           url: 'http://{HOST.IP}/cm'
           query_fields:
             -
               name: cmnd
-              value: Status
-          triggers:
-            -
-              uuid: 3513bd0680f44bc980084fe195dd203b
-              expression: 'nodata(/Tasmota Socket NOUS A1T/Status,300)<>0'
-              name: 'Connection problem.  More than 5 minutes since last data from socket.'
-              priority: INFO
-              description: 'No data received from socket in 5 minutes. Connection problem.'
+              value: 'Status 0'
         -
           uuid: 1eb39e3320d74692864afa716e708f5b
           name: 'Power usage today'
@@ -156,7 +240,7 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.Today
           master_item:
-            key: energyStatus
+            key: status
         -
           uuid: f4ff95ab15ff477e8fca6925644c31f2
           name: 'Power usage total'
@@ -171,7 +255,7 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.Total
           master_item:
-            key: energyStatus
+            key: status
         -
           uuid: ce94ffbc7ff94b36a36c9569f3956dba
           name: TotalStartTime
@@ -186,7 +270,7 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.TotalStartTime
           master_item:
-            key: energyStatus
+            key: status
         -
           uuid: 4e2ae4ef1c2d4ea5ab90762eee60cd80
           name: Voltage
@@ -201,7 +285,7 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.Voltage
           master_item:
-            key: energyStatus
+            key: status
           triggers:
             -
               uuid: 5af016d83a5a4cf9999977e219631225
@@ -209,6 +293,36 @@ zabbix_export:
               name: 'Power loss'
               status: DISABLED
               priority: WARNING
+        -
+          uuid: 9fa305eac1574cfeb488b27001be3d54
+          name: 'Wifi RSSI'
+          type: DEPENDENT
+          key: WifiRSSI
+          delay: '0'
+          value_type: FLOAT
+          description: 'Received signal strength indicator'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSTS.Wifi.RSSI
+          master_item:
+            key: status
+        -
+          uuid: 7e0c6362f3594774b6700aee3eb0fb5e
+          name: 'Wifi Signal'
+          type: DEPENDENT
+          key: WifiSignal
+          delay: '0'
+          value_type: FLOAT
+          units: dBm
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - $.StatusSTS.Wifi.Signal
+          master_item:
+            key: status
         -
           uuid: f93bc937d5e7478e83ca64e0edad3d89
           name: 'Power usage yesterday'
@@ -223,7 +337,7 @@ zabbix_export:
               parameters:
                 - $.StatusSNS.ENERGY.Yesterday
           master_item:
-            key: energyStatus
+            key: status
       dashboards:
         -
           uuid: 4663371314764d3d930a39d6048196a1
@@ -359,7 +473,7 @@ zabbix_export:
                       name: itemid
                       value:
                         host: 'Tasmota Socket NOUS A1T'
-                        key: PowerStatus
+                        key: RelayStatus
                 -
                   type: ITEM
                   name: Voltage
