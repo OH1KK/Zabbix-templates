@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.0'
-  date: '2022-09-05T20:30:54Z'
+  date: '2022-09-05T20:57:21Z'
   groups:
     -
       uuid: 6070be19e3d44c5dbae0905131b517d3
@@ -65,7 +65,7 @@ zabbix_export:
             key: status
         -
           uuid: 1f578ffadf1c4e60b6b6c4c3879c09a8
-          name: 'Device mac'
+          name: 'Device MAC'
           type: DEPENDENT
           key: DeviceMAC
           delay: '0'
@@ -340,6 +340,101 @@ zabbix_export:
             key: status
       dashboards:
         -
+          uuid: 1e17f29e91f24b5e84c97bc96747c531
+          name: 'Device info'
+          display_period: '3600'
+          auto_start: 'NO'
+          pages:
+            -
+              widgets:
+                -
+                  type: ITEM
+                  width: '4'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: DeviceName
+                -
+                  type: ITEM
+                  x: '4'
+                  width: '4'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: FriendlyName
+                -
+                  type: ITEM
+                  x: '17'
+                  width: '4'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: DeviceIP
+                -
+                  type: ITEM
+                  x: '12'
+                  width: '5'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: DeviceMAC
+                -
+                  type: ITEM
+                  x: '8'
+                  width: '4'
+                  fields:
+                    -
+                      type: INTEGER
+                      name: show
+                      value: '2'
+                    -
+                      type: ITEM
+                      name: itemid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        key: FwVersion
+                -
+                  type: GRAPH_CLASSIC
+                  name: 'Wifi signal and RSSI'
+                  'y': '2'
+                  width: '21'
+                  height: '5'
+                  fields:
+                    -
+                      type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Tasmota Socket NOUS A1T'
+                        name: 'Wifi signal and RSSI'
+        -
           uuid: 4663371314764d3d930a39d6048196a1
           name: 'Power status'
           pages:
@@ -581,3 +676,21 @@ zabbix_export:
           item:
             host: 'Tasmota Socket NOUS A1T'
             key: Current
+    -
+      uuid: 7d713f46fcb34502910d1c2b923ca03a
+      name: 'Wifi signal and RSSI'
+      graph_items:
+        -
+          color: F63100
+          yaxisside: RIGHT
+          calc_fnc: ALL
+          item:
+            host: 'Tasmota Socket NOUS A1T'
+            key: WifiSignal
+        -
+          sortorder: '1'
+          color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'Tasmota Socket NOUS A1T'
+            key: WifiRSSI
